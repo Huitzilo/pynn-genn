@@ -25,5 +25,7 @@ def setup(timestep=DEFAULT_TIMESTEP, min_delay=DEFAULT_MIN_DELAY,
           max_delay=DEFAULT_MAX_DELAY, **extra_params):
     common.setup(timestep, min_delay, max_delay, **extra_params)
     simulator.state.keep_dirs =  extra_params.get('keep_dirs', False)
+    simulator.state.clear()
+    
     
     

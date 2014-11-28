@@ -33,7 +33,6 @@ class State(common.control.BaseState):
 #        self.network = None
         self.modeldir = None
         self.keep_dirs = False
-        self.clear()
         
     def __del__(self):
         self._wipe_modeldir()
