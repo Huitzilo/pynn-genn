@@ -12,6 +12,7 @@ import time
 
 from pyNN import common
 from .templates.makefile import makefile
+from .genn import Network
 
 name = "GeNN"
 logger = logging.getLogger("PyNN")
@@ -30,49 +31,51 @@ class State(common.control.BaseState):
                     + "Get GeNN from https://github.com/genn-team/genn ."))
         self.mpi_rank = 0
         self.num_processes = 1
-#        self.network = None
         self.modeldir = None
         self.keep_dirs = False
+        self.needs_recompile = True
+        self.t = 0.
+        self.network = None
+        
         
     def __del__(self):
+        """
+        Destructor. Make reasonably sure no files linger around when 
+        interpreter exits (unless self.keep_dirs is set).
+        """ 
         self._wipe_modeldir()
     
-#    def run(self, simtime):
-#        self.running = True
-#        self.network.run(simtime * ms)
+    def run(self, simtime):
+        if self.needs_recompile:
+            self.network.compile()
+        self.network.run(simtime)
 #        
 #    def run_until(self, tstop):
 #        self.run(tstop - self.t)
         
     def clear(self):
+        """
+        Clears the modeldir, deletes the python representation of the GeNN 
+        network, and resets the simulator.
+        """
         # wipe the modeldir and make a new one
         self._wipe_modeldir()
         self._create_modeldir()
         # create a new makefile
         self._create_makefile()
         #do the rest...
-        self.recorders = set([])
-        self.id_counter = 0
-        self.segment_counter = -1
-#        if self.network:
-#            for item in self.network.groups + self.network._all_operations:
-#                del item
-#        self.network = brian.Network()
-#        self.network.clock = brian.Clock()
+        self.network = Network()
         self.reset()
         
     def reset(self):
         """Reset the state of the current network to time t = 0."""
-#        self.network.reinit()
-        self.running = False
         self.t_start = 0
-#        self.segment_counter += 1
-#        for group in self.network.groups:
-#            if hasattr(group, "initialize"):
-#                logger.debug("Re-initalizing %s" % group)
-#                group.initialize()
         
     def _wipe_modeldir(self):
+        """
+        Removes any files from the temporary modeldir and deletes the dir 
+        (if not disabled by setting self.keep_dirs.
+        """
         if not (self.modeldir is None) and not self.keep_dirs:
             files = os.listdir(self.modeldir)
             for f in files:
