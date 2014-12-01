@@ -5,10 +5,10 @@ Created on Fri Nov 28 20:37:58 2014
 @author: micha
 """
 
-# The makefile takes these substitutions:
-# 0 the modeldir
-# 1 the GeNNPATH
-# 2 a date as a timestamp
+# The makefile takes these substitutions (all strings):
+# $modeldir  - the modeldir
+# $gp - the GeNNPATH
+# $timestamp - a date as a timestamp
 makefile = """
 ##--------------------------------------------------------------------------
 ##   Author: Thomas Nowotny
@@ -23,7 +23,7 @@ makefile = """
 ##  
 ##--------------------------------------------------------------------------
 
-ROOTDIR		:= {0}
+ROOTDIR		:= $modeldir
 EXECUTABLE	:= PyNNGeNN_model
 SOURCES		:= PyNNGeNN_model.cu
 
@@ -33,10 +33,14 @@ CCFLAGS		:=
 NVCCFLAGS	:= 
 
 ifdef COMSPEC
-	include	{1}/lib/include/makefile_common_cygwin.mk
+	include	$gp/lib/include/makefile_common_cygwin.mk
 else
-	include	{1}/lib/include/makefile_common.mk
+	include	$gp/lib/include/makefile_common.mk
 endif
 
-## {2}
+## $timestamp
 """
+
+
+
+
