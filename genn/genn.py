@@ -42,14 +42,25 @@ class Network(object):
         self.dt = dt
 
     def add_param_def(self, paramdef):
+        """
+        Adds a ParamDef() parameter definition to the model.
+        This definition will be referenced in the code by its name as specified 
+        in ParamDef(name=name,...).
+        """
         pdef_name = paramdef.code_params['name']
         self.param_defs[pdef_name] = paramdef.get_the_code()
 
     def add_neuron_population(self, neuronpop):
+        """
+        Add a NeuronPopulation to the model.
+        """
         npop_name = neuronpop.code_params['name']
         self.neuron_populations[npop_name] = neuronpop.get_the_code()
 
     def add_synapse_population(self, synapsepop):
+        """
+        Add a SynapsePopulation to the model.
+        """
         spop_name = synapsepop.code_params['name']
         self.synapse_populations[spop_name] = synapsepop.get_the_code()
         
@@ -71,7 +82,7 @@ class Network(object):
         code = '\n'.join(header, pdefs, mdef_header, npops, spops, other)
         return code
         
-        
+
 class ParamDef(object):
     """
     The python representation of a parameter definition.
@@ -85,7 +96,7 @@ class ParamDef(object):
         The GeNN representation of a parameter definition (a C array).
         
         Parameters:
-        name: reference of the parameter array
+        name: reference of the parameter array (must be unique)
         param_dict: dictionary of parameters
         param_seq: list of keys to the disctionary that define param sequence
         c_type: C type of the parameter dictionary
@@ -145,7 +156,7 @@ class NeuronPopulation(GeNNCode):
         The GeNN representation of a neuron population.
         
         Parameters:
-        name: identifier of the population (string)
+        name: identifier of the population (string) (must be unique)
         n: number of neurons in the population (int)
         neurontype: Type of the neurons (int)
         para: Parameters of this neuron type (pointer ref as string)
@@ -183,7 +194,7 @@ class SynapsePopulation(GeNNCode):
         
         Parameters:
         
-        name: The name of the synapse population (string)
+        name: The name of the synapse population (string) (must be unique)
         sType: The type of synapse to be added (int)
         sConn: The type of synaptic connectivity (int) 
         gType: The way how the synaptic conductivity g will be defined (int)
