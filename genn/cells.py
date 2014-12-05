@@ -11,8 +11,9 @@ class GeNNNeuron(object):
     """
     Base class for GeNN Neurons.
     """
-    pass
-
+    def __init__(self, cell_params, initial_params):
+        pass
+    
 class RulkovMapNeuron(object):
     """
     Rulkov map-based neurons.
@@ -62,3 +63,4 @@ class LeakyIntegrate(object):
     Leaky Integrate and Fire number two.
     """
     pass
+
