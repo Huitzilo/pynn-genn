@@ -5,62 +5,73 @@ Created on Fri Nov 28 18:56:43 2014
 @author: micha
 """
 
+from pyNN.models import BaseModelType
+
 # These are defined in $GeNNPATH/lib/utils.h and extra_neurons.h
 
-class GeNNNeuron(object):
-    """
-    Base class for GeNN Neurons.
-    """
-    def __init__(self, cell_params, initial_params):
-        pass
-    
-class RulkovMapNeuron(object):
+class RulkovMapNeuron(BaseModelType):
     """
     Rulkov map-based neurons.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 
-class PoissonNeurons(object):
+class PoissonNeurons(BaseModelType):
     """
     Poisson process spike train generator.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 
-class TraubMiles(object):
+class TraubMiles(BaseModelType):
     """
     Traub and Miles Hodgin-Huxley neurons.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 
-class Izhikevich(object):
+class Izhikevich(BaseModelType):
     """
     Izhikevich neurons.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 
-class IzhikevichVar(object):
+class IzhikevichVar(BaseModelType):
     """
     Izhikevich neurons with variable parameters.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 
 # from extra_neurons.h
 
-class LeakyIF(object):
+class LeakyIF(BaseModelType):
     """
     Leaky Integrate-And-Fire neurons.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 
-class RegularSpiking(object):
+class RegularSpiking(BaseModelType):
     """
     A regularly spiking neuron.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 
-class LeakyIntegrate(object):
+class LeakyIntegrate(BaseModelType):
     """
     Leaky Integrate and Fire number two.
     """
-    pass
+    default_parameters = {}
+    default_initial_values = {}
+    parameter_checks = {}
 

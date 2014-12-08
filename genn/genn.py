@@ -3,6 +3,9 @@
 Created on Mon Dec  1 14:22:20 2014
 
 @author: micha
+
+Essentially a python wrapper for GeNN functionality.
+
 """
 from string import Template
 import time
