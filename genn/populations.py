@@ -30,8 +30,15 @@ class Population(common.Population):
         pass
     
     def _create_cells(self):
-        #TODO
+        # number of neurons is in self.size
+        # parameterised cell class is in self.celltype
+        # name is in self.label
+        # need to provide something for self._recorder_class
         # need to create array self.all_cells
+        pass
+
+    def initialize(self, **initial_values):
+        #initial_values is a dict
         pass
     
     def _get_parameters(self):
