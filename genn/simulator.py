@@ -3,6 +3,8 @@
 Created on Fri Nov 28 20:06:42 2014
 
 @author: micha
+
+
 """
 
 import logging
@@ -19,14 +21,21 @@ logger = logging.getLogger("PyNN")
 logger.setLevel(logging.INFO)
 
 class State(common.control.BaseState):
+    """
+    The State class essentially controls a temporary directory, in which the 
+    generated C-Code is saved and compiled, and where any output from the 
+    simulation is stored.
     
+    State.clear() should be called after instratiation to obtain a fully
+    initialised object. 
+    """
     def __init__(self):
         common.control.BaseState.__init__(self)
         # check if GeNNPATH is set
         try:
-           self.gp = os.environ['GeNNPATH']
+           self.gp = os.environ['GENN_PATH']
         except KeyError, e:
-            raise(Exception("GeNNPATH environment variable not set." + '\n' 
+            raise(Exception("GENN_PATH environment variable not set." + '\n' 
                     + "Please make it point to your GeNN installation." + '\n' 
                     + "Get GeNN from https://github.com/genn-team/genn ."))
         self.mpi_rank = 0

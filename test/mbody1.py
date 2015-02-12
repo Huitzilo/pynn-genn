@@ -18,6 +18,10 @@ p.setup()
 # Population(size, cellclass, cellparams=None, structure=None, initial_values={}, label=None):
         
 #  model.addNeuronPopulation("PN", _NAL, POISSONNEURON, myPOI_p, myPOI_ini);
+
+# TODO set the params, also for the other Populations
+mypoi_p = {} #todo
+mypoi_ini = {} #todo
 pn = p.Population(num_al, 
                        p.PoissonNeuron, 
                        cellparams=mypoi_p, 
@@ -74,6 +78,9 @@ prj_pnkc = p.Projection(pn, kc,
                         p.AllToAllConnector(), 
                         synapse_type=p.NSynapse, 
                         label="PNKC")
+
+#TODO: copy other Projections
+#TODO: sort out passing synaptic weights.  
 
  model.addSynapsePopulation("PNLHI", NSYNAPSE, ALLTOALL, INDIVIDUALG, NO_DELAY, EXPDECAY, "PN", "LHI", myPNLHI_p, postSynV, postExpPNLHI);
  model.addSynapsePopulation("LHIKC", NGRADSYNAPSE, ALLTOALL, GLOBALG, NO_DELAY, EXPDECAY, "LHI", "KC", myLHIKC_p, postSynV, postExpLHIKC);

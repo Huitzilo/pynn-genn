@@ -25,6 +25,7 @@ model_header = """
 model_definition_header = """
 void modelDefinition(NNmodel &model) 
 {
+  initGeNN();
   model.setName("$modelname");
 """
 
