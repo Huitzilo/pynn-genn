@@ -18,17 +18,18 @@ runs the compiled binary, and reads back the results.
 """
 
 import logging
-
-logging.basicConfig()
-
-import os
-from pyNN import common, space
+from pyNN import common
 from pyNN.common.control import DEFAULT_MAX_DELAY, DEFAULT_TIMESTEP, DEFAULT_MIN_DELAY
 from pyNN.connectors import *
+from pyNN.recording import *
 from . import simulator
+from .standardmodels import *
+from .populations import Population, PopulationView, Assembly
+from .projections import Projection
 from .cells import *
-from .populations import Population
 
+
+logger = logging.getLogger("PyNN-GeNN")
 
 def setup(timestep=DEFAULT_TIMESTEP, min_delay=DEFAULT_MIN_DELAY, 
           max_delay=DEFAULT_MAX_DELAY, **extra_params):
@@ -39,4 +40,5 @@ def setup(timestep=DEFAULT_TIMESTEP, min_delay=DEFAULT_MIN_DELAY,
     simulator.state.clear()
     
     
-    
+run, run_until = common.build_run(simulator)
+run_for = run
