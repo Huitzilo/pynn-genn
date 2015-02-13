@@ -20,6 +20,12 @@ name = "GeNN"
 logger = logging.getLogger("PyNN")
 logger.setLevel(logging.INFO)
 
+class ID(int, common.IDMixin):
+    def __init__(self, n):
+        """Create an ID object with numerical value `n`."""
+        int.__init__(n)
+        common.IDMixin.__init__(self)
+
 class State(common.control.BaseState):
     """
     The State class essentially controls a temporary directory, in which the 
@@ -44,6 +50,9 @@ class State(common.control.BaseState):
         self.keep_dirs = False
         self.needs_recompile = True
         self.t = 0.
+        self.simtime = 0.
+        self.dt = 0.1
+        self.id_counter = 0
         self.network = None
         
         
@@ -54,13 +63,14 @@ class State(common.control.BaseState):
         """ 
         self._wipe_modeldir()
     
-    def run(self, simtime):
+    def run_until(self, simtime):
+        self._set_simtime(simtime)
         if self.needs_recompile:
-            self.network.compile()
-        self.network.run(simtime)
-#        
-#    def run_until(self, tstop):
-#        self.run(tstop - self.t)
+            self.network._recompile()
+        self.network._execute()
+
+    def _set_simtime(self, simtime):
+        self.simtime = simtime
         
     def clear(self):
         """
@@ -101,25 +111,6 @@ class State(common.control.BaseState):
         with open(os.path.join(self.modeldir, 'Makefile'), 'w') as f:
             f.write(mkfstring)
             
-        
-        
-        
-        
-#    def _get_dt(self):
-#        if self.network.clock is None:
-#            raise Exception("Simulation timestep not yet set. Need to call setup()")
-#        return float(self.network.clock.dt/ms)
-#
-#    def _set_dt(self, timestep):
-#        logger.debug("Setting timestep to %s", timestep)
-#        #if self.network.clock is None or timestep != self._get_dt():
-#        #    self.network.clock = brian.Clock(dt=timestep*ms)
-#        self.network.clock.dt = timestep * ms
-#    dt = property(fget=_get_dt, fset=_set_dt)
-#
-#    @property
-#    def t(self):
-#        return float(self.network.clock.t/ms)
         
     
 state = State()
