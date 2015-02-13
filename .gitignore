@@ -56,3 +56,4 @@ target/
 # my own stuff
 .spyderproject
 *~
+pyNN
