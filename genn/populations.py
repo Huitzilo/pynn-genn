@@ -75,6 +75,10 @@ class Population(common.Population):
         for id in self.all_cells:
             id.parent = self
         simulator.state.id_counter += self.size
+        simulator.state.network._add_pynn_population(projection=self, 
+                                                     label=self.label)
+        simulator.state.network._add_pynn_params(parameters=self._parameters,
+                                         label="{}_params".format(self.label))
 
     def _set_initial_value_array(self, variable, initial_values):
         pass

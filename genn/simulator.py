@@ -56,7 +56,6 @@ class State(common.control.BaseState):
         self.network = None
         self.modelname = None
         
-        
     def __del__(self):
         """
         Destructor. Make reasonably sure no files linger around when 

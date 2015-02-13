@@ -15,10 +15,14 @@ class Network(object):
     """
     Manage the network in python.
     """
-    param_defs = {}
-    neuron_populations = {}
-    synapse_populations = {}
-    other_code = {}
+    pynn_populations = {}
+    pynn_projections = {} 
+    pynn_params = {}
+    
+    genn_param_defs = {}
+    genn_neuron_populations = {}
+    genn_synapse_populations = {}
+    genn_other_code = {}
     dt = 0.1
     
     def __init__(self, modelname):
@@ -36,6 +40,45 @@ class Network(object):
     def set_dt(self, dt):
         self.dt = dt
 
+    def _add_pynn_population(self, population, label):
+        """
+        Add a pyNN.Population to the network.
+        
+        Parameters:
+        population - the pyNN.Population object
+        label - a unique label
+        """
+        if label in self.pynn_populations.keys():
+            raise(Exception(
+                "Population label {} is not unique.".format(label)))
+        self.pynn_populations[label] = population
+        
+    def _add_pynn_projection(self, projection, label):
+        """
+        Add a pyNN.Projection to the network.
+        Parameters:
+        projection - the pyNN.Projection object
+        label - a unique label
+        """
+        if label in self.pynn_projections.keys():
+            raise(Exception(
+                'Projection label {} is not unique.'.format(label)))
+        self.pynn_projections[label] = projection
+        
+    def _add_pynn_params(self, parameters, label):
+        """
+        Add a parameter set to the model name space, e.g. used by populations 
+        or projections. 
+        
+        Parameters:
+        parameters - the ParameterSpace object
+        label - a unique label
+        """
+        if label in self.pynn_params.keys():
+            raise(Exception(
+                'Parameter set label {} is not unique.'.format(label)))
+        self.pynn_params[label] = parameters
+        
     def add_param_def(self, paramdef):
         """
         Adds a ParamDef() parameter definition to the model.
@@ -58,7 +101,8 @@ class Network(object):
         """
         spop_name = synapsepop.code_params['name']
         self.synapse_populations[spop_name] = synapsepop.get_the_code()
-        
+    
+    
     def generate_model_cc(self):
         """
         Generate the code according to the network specification.
