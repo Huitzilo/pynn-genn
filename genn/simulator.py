@@ -54,6 +54,7 @@ class State(common.control.BaseState):
         self.dt = 0.1
         self.id_counter = 0
         self.network = None
+        self.modelname = None
         
         
     def __del__(self):
@@ -83,7 +84,8 @@ class State(common.control.BaseState):
         # create a new makefile
         self._create_makefile()
         #do the rest...
-        self.network = Network()
+        self.network = Network(
+                time.strftime('{}_%y-%m-%d-%H-%M-%S'.format(self.modelname)))
         self.reset()
         
     def reset(self):

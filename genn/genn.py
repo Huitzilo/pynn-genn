@@ -9,7 +9,6 @@ Essentially a python wrapper for GeNN functionality.
 from string import Template
 import time
 import os
-from . import simulator
 from .templates import model
 
 class Network(object):
@@ -21,16 +20,10 @@ class Network(object):
     synapse_populations = {}
     other_code = {}
     dt = 0.1
+    
+    def __init__(self, modelname):
+        self.modelname = modelname
         
-    def run(self, simtime):
-        """
-        compile the network if necessary and run the whole thing.
-        """
-        self._set_simtime(simtime)
-        if simulator.state.needs_recompile:
-            self._recompile()
-        self._execute()
-
     def _set_simtime(self, simtime):
         pass
     
@@ -75,9 +68,8 @@ class Network(object):
         header_t = Template(model.model_header)
         header = header_t.substitute(dt=self.dt, timestamp=timestamp)
         pdefs = '\n'.join(self.param_defs.values())
-        mname = os.path.basename(simulator.state.modeldir)
         mdef_header_t = Template(model.model_definition_header)
-        mdef_header = mdef_header_t.substitute(modelname=mname)
+        mdef_header = mdef_header_t.substitute(modelname=self.modelname)
         npops = '\n'.join(self.neuron_populations.values())
         spops = '\n'.join(self.synapse_populations.values())        
         other = '\n'.join(self.other_code.values())

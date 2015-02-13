@@ -37,6 +37,7 @@ def setup(timestep=DEFAULT_TIMESTEP, min_delay=DEFAULT_MIN_DELAY,
     common.setup(timestep, min_delay, max_delay, **extra_params)
     # set up the basic functionality
     simulator.state.keep_dirs =  extra_params.get('keep_dirs', False)
+    simulator.state.modelname = extra_params.get('modelname', 'GeNNmodel')
     simulator.state.clear()
     
     
