@@ -5,11 +5,11 @@ Created on Fri Nov 28 18:56:43 2014
 @author: micha
 """
 
-from pyNN.models import BaseModelType
+from pyNN.models import BaseCellType
 
 # These are defined in $GeNNPATH/lib/utils.h and extra_neurons.h
 
-class RulkovMapNeuron(BaseModelType):
+class RulkovMapNeuron(BaseCellType):
     """
     Rulkov map-based neurons.
     """
@@ -17,10 +17,11 @@ class RulkovMapNeuron(BaseModelType):
     default_initial_values = {}
     parameter_checks = {}
 
-class PoissonNeurons(BaseModelType):
+class PoissonNeurons(BaseCellType):
     """
     Poisson process spike train generator.
     """
+    recordable = ['spikes']
     default_parameters = {'rate': 0.1,      # 0 - firing rate
                           't_refrac': 2.5,  # 1 - seed
                           'V_spike': 20.,   # 2 - SpikeTime
@@ -32,7 +33,7 @@ class PoissonNeurons(BaseModelType):
 
     parameter_checks = {}
 
-class TraubMiles(BaseModelType):
+class TraubMiles(BaseCellType):
     """
     Traub and Miles Hodgin-Huxley neurons.
     """
@@ -49,7 +50,7 @@ class TraubMiles(BaseModelType):
                               'p_K_n': 0.5961207}   # 3 - prob. for K channel activation n
     parameter_checks = {}
 
-class Izhikevich(BaseModelType):
+class Izhikevich(BaseCellType):
     """
     Izhikevich neurons.
     """
@@ -57,7 +58,7 @@ class Izhikevich(BaseModelType):
     default_initial_values = {}
     parameter_checks = {}
 
-class IzhikevichVar(BaseModelType):
+class IzhikevichVar(BaseCellType):
     """
     Izhikevich neurons with variable parameters.
     """
@@ -67,7 +68,7 @@ class IzhikevichVar(BaseModelType):
 
 # from extra_neurons.h
 
-class LeakyIF(BaseModelType):
+class LeakyIF(BaseCellType):
     """
     Leaky Integrate-And-Fire neurons.
     """
@@ -75,7 +76,7 @@ class LeakyIF(BaseModelType):
     default_initial_values = {}
     parameter_checks = {}
 
-class RegularSpiking(BaseModelType):
+class RegularSpiking(BaseCellType):
     """
     A regularly spiking neuron.
     """
@@ -83,7 +84,7 @@ class RegularSpiking(BaseModelType):
     default_initial_values = {}
     parameter_checks = {}
 
-class LeakyIntegrate(BaseModelType):
+class LeakyIntegrate(BaseCellType):
     """
     Leaky Integrate and Fire number two.
     """
