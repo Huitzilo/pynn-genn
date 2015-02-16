@@ -32,7 +32,8 @@ class PoissonNeurons(BaseCellType):
                               'seed': 1234567,      # 1 - seed
                               'SpikeTime': -10.}    # 2 - SpikeTime
     ini_seq = ['V', 'seed', 'SpikeTime']
-    c_type = 'double'
+    
+    c_name = "POISSONNEURON"
 
     parameter_checks = {}
 

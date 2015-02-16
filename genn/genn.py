@@ -47,13 +47,10 @@ class Network(object):
     def _set_simtime(self, simtime):
         raise(NotImplementedError)
     
-    def _recompile(self):
+    def generate_GeNN_code(self):
         self._translate_network_to_genn()
         code = self._generate_model_cc()
-        print code
-        # call buildmodel.sh from GeNN distribution 
-        # cd model && buildmodel.sh && make clean && make release
-        raise(NotImplementedError)
+        return code
     
     def _execute(self):
         raise(NotImplementedError)
@@ -158,7 +155,7 @@ class Network(object):
             genn_pop = NeuronPopulation(
                             name=pop.label,
                             n=len(pop.all_cells),
-                            neurontype=pop.celltype.__class__.__name__)
+                            neurontype=pop.celltype.c_name)
             self._add_neuron_population(genn_pop)
             pop_params = self._check_unique_parameters(pop._parameters)
             pop_params = ParamDef(name="{}_params".format(pop.label),
