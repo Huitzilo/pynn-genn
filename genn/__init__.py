@@ -38,6 +38,8 @@ def setup(timestep=DEFAULT_TIMESTEP, min_delay=DEFAULT_MIN_DELAY,
     # set up the basic functionality
     simulator.state.keep_dirs =  extra_params.get('keep_dirs', False)
     simulator.state.modelname = extra_params.get('modelname', 'GeNNmodel')
+    simulator.state.float_prec = extra_params.get('float_prec', 'float')
+    simulator.state.nGPU = extra_params.get('nGPU', 0)
     simulator.state.clear()
     
     

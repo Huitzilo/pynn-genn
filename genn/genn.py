@@ -25,9 +25,22 @@ class Network(object):
     genn_other_code = {}
     dt = 0.1
     
-    def __init__(self, modelname):
+    def __init__(self, modelname, float_prec='float', nGPU=0, modelseed=0):
+        """
+        Parameters:
+        modelname - the name of the model (string)
+        float_prec - floating-point precision (double or float)
+        nGPU - 0: run on CPU, 1: run on default GPU, n: run on GPU number 'n-2'.
+        """
         self.modelname = modelname
-        
+        self.float_prec = float_prec
+        self.modelseed = modelseed
+        self.nGPU = nGPU
+        if self.nGPU > 1:
+            nGPU_t = Template(model.model_GPU_selection)
+            nGPU_code = nGPU_t.substitute(nGPU=self.nGPU-2)
+            self.genn_other_code['GPUsel'] = nGPU_code
+           
     def set_dt(self, dt):
         self.dt = dt
 
@@ -79,7 +92,7 @@ class Network(object):
         parameters - the ParameterSpace object
         label - a unique label
         param_seq  -the required sequence of the parameters in the c code
-        c-type - the C type of the parameter array
+        c_type - the C type of the parameter array
         """
         if label in self.pynn_params.keys():
             raise(Exception(
@@ -146,7 +159,7 @@ class Network(object):
             pop_params = ParamDef(name="{}_params".format(pop.label),
                                   param_dict=pop_params,
                                   param_seq=pop.celltype.param_seq,
-                                  c_type=pop.celltype.c_type) #c_type should probably be set here instead of in the cell
+                                  c_type=self.float_prec) 
             self._add_param_def(pop_params)
             for k in pop.initial_values.keys():
                 pop.initial_values[k].shape = pop.size
@@ -155,7 +168,7 @@ class Network(object):
             pop_ini_params = ParamDef(name="{}_ini_params".format(pop.label),
                                       param_dict=pop_ini_params,
                                       param_seq=pop.celltype.ini_seq,
-                                      c_type=pop.celltype.c_type)
+                                      c_type=self.float_prec)
             self._add_param_def(pop_ini_params)
         for prj in self.pynn_projections.values():
             self._add_synapse_population(prj)
@@ -180,6 +193,10 @@ class Network(object):
         npops = '\n'.join(self.genn_neuron_populations.values())
         spops = '\n'.join(self.genn_synapse_populations.values())        
         other = '\n'.join(self.genn_other_code.values())
+        mdef_footer_t = Template(model.model_definition_footer)
+        mdef_footer = mdef_footer_t.substitute(model_seed=self.modelseed,
+                                               C_TYPE=self.float_prec.upper())
+                                               
         code = '\n'.join([header, 
                           "  // PARAMETER DEFINITIONS #####################", 
                           pdefs, 
@@ -189,8 +206,8 @@ class Network(object):
                           "\n  // SYNAPSE POPULATIONS / PROJECTIONS ########",
                           spops, 
                           "\n  // OTHER CODE ###############################",
-                          other])
-        code = '\n'.join([code, model.model_definition_footer]) 
+                          other,
+                          mdef_footer])
         return code
 
 

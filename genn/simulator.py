@@ -55,6 +55,8 @@ class State(common.control.BaseState):
         self.id_counter = 0
         self.network = None
         self.modelname = None
+        self.float_prec = None
+        self.nGPU = 0
         
     def __del__(self):
         """
@@ -84,7 +86,9 @@ class State(common.control.BaseState):
         self._create_makefile()
         #do the rest...
         self.network = Network(
-                time.strftime('{}_%y-%m-%d-%H-%M-%S'.format(self.modelname)))
+                time.strftime('{}_%y-%m-%d-%H-%M-%S'.format(self.modelname)),
+                float_prec=self.float_prec,
+                nGPU=self.nGPU)
         self.reset()
         
     def reset(self):

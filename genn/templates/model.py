@@ -35,6 +35,12 @@ void modelDefinition(NNmodel &model)
 
 # ... then anything alse we'd like to add (e.g model.setSynapseG() or so)
 
+model_GPU_selection = """
+  model.setGPUdevice($nGPU);
+"""
+
 model_definition_footer = """
+  model.setSeed($model_seed);
+  model.setPrecision($C_TYPE)
 }
 """
