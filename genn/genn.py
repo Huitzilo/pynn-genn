@@ -82,6 +82,11 @@ class Network(object):
             raise(Exception(
                 'Projection label {} is not unique.'.format(label)))
         self.pynn_projections[label] = projection
+    
+    def add_pynn_recorder(self, recorder):
+        """
+        """
+        pass
         
     def _add_pynn_params(self, parameters, label, param_seq, c_type):
         """

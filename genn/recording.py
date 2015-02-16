@@ -13,7 +13,14 @@ class Recorder(recording.Recorder):
     _simulator = simulator
 
     def _record(self, variable, new_ids, sampling_interval=None):
-        pass
+        if not (sampling_interval is None):
+            error = "Specifying a sampling interval for recording " +\
+            "is currently not supported."
+            raise(NotImplementedError(error))
+        if new_ids != set(self.population.all_cells):
+            error = "Can only record from the entire population. Sorry."
+            raise(NotImplementedError(error))
+        simulator.state.network.add_pynn_recorder(self)
 
     def _get_spiketimes(self, id):
         return numpy.array([id, id+5], dtype=float) % self._simulator.state.t
