@@ -11,13 +11,16 @@ import logging
 import os
 import tempfile
 import time
+import subprocess
+from string import Template
 
 from pyNN import common
 from .templates.makefile import makefile
 from .genn import Network
 
-name = "GeNN"
-logger = logging.getLogger("PyNN")
+logging.basicConfig()
+name = "PyNN-GeNN"
+logger = logging.getLogger(name)
 logger.setLevel(logging.INFO)
 
 class ID(int, common.IDMixin):
@@ -67,8 +70,24 @@ class State(common.control.BaseState):
     
     def run_until(self, simtime):
         self._set_simtime(simtime)
-        if self.needs_recompile:
-            self.network._recompile()
+        if self.needs_recompile:            
+            code = self.network.generate_GeNN_code()
+            print code
+            codepath = os.path.join(self.modeldir, 'PyNNGeNN_model.cc')
+            codefile = open(codepath, 'w')
+            codefile.write(code)
+            codefile.close()
+            buildmodel_path = os.path.join(self.gp, 
+                                           'lib', 
+                                           'bin',
+                                           'buildmodel.sh')
+            print(buildmodel_path)
+            subprocess.check_call([buildmodel_path, 'PyNNGeNN_model'], cwd=self.modeldir)
+            subprocess.check_call(['make', 'clean'], cwd=self.modeldir)
+            subprocess.check_call(['make', 'release'], cwd=self.modeldir)
+            
+        # call buildmodel.sh from GeNN distribution 
+        # cd model && buildmodel.sh && make clean && make release
         self.network._execute()
 
     def _set_simtime(self, simtime):
@@ -86,7 +105,7 @@ class State(common.control.BaseState):
         self._create_makefile()
         #do the rest...
         self.network = Network(
-                time.strftime('{}_%y-%m-%d-%H-%M-%S'.format(self.modelname)),
+                time.strftime('{}_%y%m%d%H%M%S'.format(self.modelname)),
                 float_prec=self.float_prec,
                 nGPU=self.nGPU)
         self.reset()
@@ -112,7 +131,10 @@ class State(common.control.BaseState):
         logger.info("created modeldir in {}.".format(self.modeldir))
         
     def _create_makefile(self):
-        mkfstring = makefile.format(self.modeldir, self.gp, time.asctime())
+        mkf_t = Template(makefile)
+        mkfstring = mkf_t.substitute(modeldir=self.modeldir, 
+                                     gp=self.gp, 
+                                     timestamp=time.asctime())
         with open(os.path.join(self.modeldir, 'Makefile'), 'w') as f:
             f.write(mkfstring)
             

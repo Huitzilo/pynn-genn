@@ -8,7 +8,7 @@ Created on Fri Feb 13 14:59:38 2015
 
 import pyNN.genn as p
 
-p.setup(nGPU=3, float_prec='double')
+p.setup(nGPU=1, float_prec='double', keep_modeldir=True)
 
 initial_params = {'V':-60., 'seed':12341234, 'SpikeTime':-10.} #should be default
 

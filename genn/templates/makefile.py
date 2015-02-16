@@ -32,11 +32,7 @@ LINK_FLAGS	:=
 CCFLAGS		:= 
 NVCCFLAGS	:= 
 
-ifdef COMSPEC
-	include	$gp/lib/include/makefile_common_cygwin.mk
-else
-	include	$gp/lib/include/makefile_common.mk
-endif
+include	$gp/userproject/include/makefile_common_gnu.mk
 
 ## $timestamp
 """
