@@ -42,7 +42,7 @@ class Projection(common.Projection):
         ## Create connections
         self.connections = []
         connector.connect(self)
-        simulator.state.network._add_pynn_projection(projection=self,
+        simulator.state.network.add_pynn_projection(projection=self,
                                                      label=self.label)
 
     def __len__(self):
