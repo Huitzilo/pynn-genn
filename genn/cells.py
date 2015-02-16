@@ -26,10 +26,13 @@ class PoissonNeurons(BaseCellType):
                           't_refrac': 2.5,  # 1 - seed
                           'V_spike': 20.,   # 2 - SpikeTime
                           'V_rest': -60.}
-                          
+    param_seq = ['rate', 't_refrac', 'V_spike', 'V_rest']
+                      
     default_initial_values = {'V': 0.,              # 0 - V
                               'seed': 1234567,      # 1 - seed
                               'SpikeTime': -10.}    # 2 - SpikeTime
+    ini_seq = ['V', 'seed', 'SpikeTime']
+    c_type = 'double'
 
     parameter_checks = {}
 
