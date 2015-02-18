@@ -70,18 +70,12 @@ class State(common.control.BaseState):
     
     def run_until(self, simtime):
         self._set_simtime(simtime)
-        if self.needs_recompile:            
-            code = self.network.generate_GeNN_code()
-            print code
-            codepath = os.path.join(self.modeldir, 'PyNNGeNN_model.cc')
-            codefile = open(codepath, 'w')
-            codefile.write(code)
-            codefile.close()
+        if self.needs_recompile:
+            self._create_modeldef_file()
             buildmodel_path = os.path.join(self.gp, 
                                            'lib', 
                                            'bin',
                                            'buildmodel.sh')
-            print(buildmodel_path)
             subprocess.check_call([buildmodel_path, 'PyNNGeNN_model'], cwd=self.modeldir)
             subprocess.check_call(['make', 'clean'], cwd=self.modeldir)
             subprocess.check_call(['make', 'release'], cwd=self.modeldir)
@@ -138,6 +132,11 @@ class State(common.control.BaseState):
         with open(os.path.join(self.modeldir, 'Makefile'), 'w') as f:
             f.write(mkfstring)
             
-        
-    
+    def _create_modeldef_file(self):
+        modeldef_code = self.network.generate_GeNN_code()
+        modeldef_path = os.path.join(self.modeldir, 'PyNNGeNN_model.cc')
+        modeldef_file = open(modeldef_path, 'w')
+        modeldef_file.write(modeldef_code)
+        modeldef_file.close()
+
 state = State()
