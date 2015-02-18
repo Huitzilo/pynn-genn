@@ -11,99 +11,27 @@ import time
 import numpy
 from ..templates import model
 
-class Network(object):
+class GennNetwork(object):
     """
-    Manage the network in python.
+    This class handles the translation of the network definition from the PyNN 
+    representation to the GeNN Representation.
     """
-    pynn_populations = {}
-    pynn_projections = {} 
-    pynn_params = {}
-    
     genn_param_defs = {}
     genn_neuron_populations = {}
     genn_synapse_populations = {}
     genn_other_code = {}
-    dt = 0.1
-    
-    def __init__(self, modelname, float_prec='float', nGPU=0, modelseed=0):
+
+    def __init__(self, pynn_network):
         """
-        Parameters:
-        modelname - the name of the model (string)
-        float_prec - floating-point precision (double or float)
-        nGPU - 0: run on CPU, 1: run on default GPU, n: run on GPU number 'n-2'.
+        parameters:
+        pynn_network - pynn_network.Network() instance
         """
-        self.modelname = modelname
-        self.float_prec = float_prec
-        self.modelseed = modelseed
-        self.nGPU = nGPU
-        if self.nGPU > 1:
+        self.network = pynn_network
+        if pynn_network.nGPU > 1:
             nGPU_t = Template(model.model_GPU_selection)
             nGPU_code = nGPU_t.substitute(nGPU=self.nGPU-2)
             self.genn_other_code['GPUsel'] = nGPU_code
-           
-    def set_dt(self, dt):
-        self.dt = dt
 
-    def _set_simtime(self, simtime):
-        raise(NotImplementedError)
-    
-    def generate_GeNN_code(self):
-        self._translate_network_to_genn()
-        code = self._generate_model_cc()
-        return code
-    
-    def _execute(self):
-        raise(NotImplementedError)
-    
-    def add_pynn_population(self, population, label):
-        """
-        Add a pyNN.Population to the network.
-        
-        Parameters:
-        population - the pyNN.Population object
-        label - a unique label
-        """
-        if label in self.pynn_populations.keys():
-            raise(Exception(
-                "Population label {} is not unique.".format(label)))
-        self.pynn_populations[label] = population
-        
-    def add_pynn_projection(self, projection, label):
-        """
-        Add a pyNN.Projection to the network.
-        Parameters:
-        projection - the pyNN.Projection object
-        label - a unique label
-        """
-        if label in self.pynn_projections.keys():
-            raise(Exception(
-                'Projection label {} is not unique.'.format(label)))
-        self.pynn_projections[label] = projection
-    
-    def add_pynn_recorder(self, recorder):
-        """
-        """
-        pass
-        
-    def _add_pynn_params(self, parameters, label, param_seq, c_type):
-        """
-        Add a parameter set to the model name space, e.g. used by populations 
-        or projections. 
-        
-        Parameters:
-        parameters - the ParameterSpace object
-        label - a unique label
-        param_seq  -the required sequence of the parameters in the c code
-        c_type - the C type of the parameter array
-        """
-        if label in self.pynn_params.keys():
-            raise(Exception(
-                'Parameter set label {} is not unique.'.format(label)))
-        parameters['label'] = label
-        parameters['param_seq'] = param_seq
-        parameters['c_type'] = c_type
-        self.pynn_params[label] = parameters
-        
     def _add_param_def(self, paramdef):
         """
         Adds a ParamDef() parameter definition to the model.
@@ -126,7 +54,7 @@ class Network(object):
         """
         spop_name = synapsepop.code_params['name']
         self.genn_synapse_populations[spop_name] = synapsepop.get_the_code()
-    
+
     def _check_unique_parameters(self, parameters):
             """
             We're currently only supporting Populations with all neurons having 
@@ -146,12 +74,13 @@ class Network(object):
                     retparm[k] = param_val[0]
             return retparm
 
-    def _translate_network_to_genn(self):
+
+    def translate_network_to_genn(self):
         """
         Collects all the pyNN components (Parameters, Populations, Projections, 
         Recorders) and translates them into their genn counterparts.
         """
-        for pop in self.pynn_populations.values():
+        for pop in self.network.pynn_populations.values():
             genn_pop = NeuronPopulation(
                             name=pop.label,
                             n=len(pop.all_cells),
@@ -161,7 +90,7 @@ class Network(object):
             pop_params = ParamDef(name="{}_params".format(pop.label),
                                   param_dict=pop_params,
                                   param_seq=pop.celltype.param_seq,
-                                  c_type=self.float_prec) 
+                                  c_type=self.network.float_prec) 
             self._add_param_def(pop_params)
             for k in pop.initial_values.keys():
                 pop.initial_values[k].shape = pop.size
@@ -170,34 +99,38 @@ class Network(object):
             pop_ini_params = ParamDef(name="{}_ini_params".format(pop.label),
                                       param_dict=pop_ini_params,
                                       param_seq=pop.celltype.ini_seq,
-                                      c_type=self.float_prec)
+                                      c_type=self.network.float_prec)
             self._add_param_def(pop_ini_params)
-        for prj in self.pynn_projections.values():
+        for prj in self.network.pynn_projections.values():
             self._add_synapse_population(prj)
-        for pd in self.pynn_params.values():
+        for pd in self.network.pynn_params.values():
             genn_pd = ParamDef(name=pd['label'], 
                                param_dict=pd, 
                                param_seq=pd['param_seq'],
                                c_type=pd['c_type'])
             self._add_param_def(genn_pd)
-    
-    def _generate_model_cc(self):
+
+
+    def generate_model_cc(self):
         """
         Generate the code according to the network specification.
         Returns a string that represents the .cc contents.
         """
         timestamp = time.asctime()
         header_t = Template(model.model_header)
-        header = header_t.substitute(dt=self.dt, timestamp=timestamp)
+        header = header_t.substitute(dt=self.network.dt, 
+                                     timestamp=timestamp)
         pdefs = '\n'.join(self.genn_param_defs.values())
         mdef_header_t = Template(model.model_definition_header)
-        mdef_header = mdef_header_t.substitute(modelname=self.modelname)
+        mdef_header = mdef_header_t.substitute(
+                                            modelname=self.network.modelname)
         npops = '\n'.join(self.genn_neuron_populations.values())
         spops = '\n'.join(self.genn_synapse_populations.values())        
         other = '\n'.join(self.genn_other_code.values())
         mdef_footer_t = Template(model.model_definition_footer)
-        mdef_footer = mdef_footer_t.substitute(model_seed=self.modelseed,
-                                               C_TYPE=self.float_prec.upper())
+        mdef_footer = mdef_footer_t.substitute(
+                                    model_seed=self.network.modelseed,
+                                    C_TYPE=self.network.float_prec.upper())
                                                
         code = '\n'.join([header, 
                           "  // PARAMETER DEFINITIONS #####################", 
@@ -212,8 +145,6 @@ class Network(object):
                           mdef_footer])
         return code
 
-
-        
 
 class ParamDef(object):
     """

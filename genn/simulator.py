@@ -16,7 +16,7 @@ from string import Template
 
 from pyNN import common
 from .templates.makefile import makefile
-from .nittygritty.genn_network import Network
+from .nittygritty.pynn_network import Network
 
 logging.basicConfig()
 name = "PyNN-GeNN"
