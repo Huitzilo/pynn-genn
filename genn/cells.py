@@ -41,6 +41,7 @@ class TraubMiles(BaseCellType):
     """
     Traub and Miles Hodgin-Huxley neurons.
     """
+    recordable = ['spikes', 'v']
     default_parameters = {'gNa': 7.15,  # 0 - gNa: Na conductance in 1/(mOhms * cm^2)
                           'ENa': 50.,   # 1 - ENa: Na equi potential in mV
                           'gK': 1.43,   # 2 - gK: K conductance in 1/(mOhms * cm^2)
@@ -52,6 +53,11 @@ class TraubMiles(BaseCellType):
                               'p_Na_m': 0.529324,   # 1 - prob. for Na channel activation m
                               'p_Na_h': 0.3176767,  # 2 - prob. for not Na channel blocking h
                               'p_K_n': 0.5961207}   # 3 - prob. for K channel activation n
+    param_seq = ['gNa', 'eNa', 'gK', 'EK', 'gl', 'El', 'Cmem']
+    ini_seq = ['E', 'p_Na_m', 'p_Na_h', 'p_K_n']
+    
+    c_name = "TRAUBMILES"
+    
     parameter_checks = {}
 
 class Izhikevich(BaseCellType):
