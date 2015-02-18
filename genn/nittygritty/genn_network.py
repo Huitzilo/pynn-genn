@@ -9,7 +9,7 @@ Essentially a python wrapper for GeNN functionality.
 from string import Template
 import time
 import numpy
-from .templates import model
+from ..templates import model
 
 class Network(object):
     """
