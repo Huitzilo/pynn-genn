@@ -20,7 +20,7 @@ class GennNetwork(object):
     genn_neuron_populations = {}
     genn_synapse_populations = {}
     genn_other_code = {}
-
+    
     def __init__(self, pynn_network):
         """
         parameters:

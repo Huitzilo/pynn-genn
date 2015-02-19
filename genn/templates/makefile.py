@@ -27,11 +27,6 @@ ROOTDIR		:= $modeldir
 EXECUTABLE	:= PyNNGeNN_model
 SOURCES		:= PyNNGeNN_model.cu
 
-INCLUDE_FLAGS	:= 
-LINK_FLAGS	:= 
-CCFLAGS		:= 
-NVCCFLAGS	:= 
-
 include	$gp/userproject/include/makefile_common_gnu.mk
 
 ## $timestamp

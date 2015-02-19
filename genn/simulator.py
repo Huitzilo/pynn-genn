@@ -38,6 +38,11 @@ class State(common.control.BaseState):
     State.clear() should be called after instratiation to obtain a fully
     initialised object. 
     """
+    
+    #these are indicators for the necessity of recompilation
+    neuron_populations_changed = False
+    synapse_populations_changed = False
+    
     def __init__(self):
         common.control.BaseState.__init__(self)
         # check if GeNNPATH is set
@@ -70,7 +75,7 @@ class State(common.control.BaseState):
     
     def run_until(self, simtime):
         self._set_simtime(simtime)
-        if self.needs_recompile:
+        if self._check_for_recompile():
             self._create_modeldef_file()
             buildmodel_path = os.path.join(self.gp, 
                                            'lib', 
@@ -79,10 +84,12 @@ class State(common.control.BaseState):
             subprocess.check_call([buildmodel_path, 'PyNNGeNN_model'], cwd=self.modeldir)
             subprocess.check_call(['make', 'clean'], cwd=self.modeldir)
             subprocess.check_call(['make', 'release'], cwd=self.modeldir)
-            
-        # call buildmodel.sh from GeNN distribution 
-        # cd model && buildmodel.sh && make clean && make release
         self.network._execute()
+
+    def _check_for_recompile(self):
+        logging.warn("Recompilation checks not yet implemented. " +
+        "Defaulting to always recompiling.")
+        return True
 
     def _set_simtime(self, simtime):
         self.simtime = simtime
